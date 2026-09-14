@@ -33,6 +33,6 @@ jobs:
       - name : verificaçao de segurança de dependencias (SAST)
         run: npm audit --audit-level=high
 
-      - name: simular falha
+      - name: simular falha automatica
         run: exit 1
 
