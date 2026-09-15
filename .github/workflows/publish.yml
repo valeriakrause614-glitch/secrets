@@ -1,0 +1,35 @@
+on:
+  push:
+   branches: [ "main" ] #dispara  apenas ao realizar merege na main
+
+
+jobs:
+   bild-and-push:
+     runs-on: ubuntu-latest
+     steps:
+       - name: baixar codigo
+         uses: actions/checkout@v4
+
+       - name: configurar docker bildx
+         uses: docker/setup-buildx-action@v3
+
+       - name: autenticar no docker hub
+         uses: docker/login-action@v3
+         with:
+           username: ${{ secrets.DOCKER_USERNAME }}
+           password: ${{ secrets.DOCKER_PASSWORD }}
+       - name: extrair metadados do dockerfile
+         id: meta
+         uses: docker/metadata-action@v5
+         with:
+           images: ${{ secrets.DOCKER_USERNAME }}/minha-aplicacao
+           tags:
+              type=raw,value=latest
+              type=sha,format=short
+       - name: construir e publicar imagem,
+         uses: docker/build-push-action@v5
+         with:
+           context: .
+           push: true
+           tags: ${{ steps.meta.outputs.tags }}
+           labels: ${{ steps.meta.outputs.labels }}
